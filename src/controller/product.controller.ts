@@ -64,6 +64,19 @@ export const productController = async (
       res.writeHead(200, { "content-type": "application/json" });
       res.end(JSON.stringify({ message: "Product updated successfully" }));
     
+  }else if(method==="DELETE" && id!==null){
+     const products = readProduct();
+    const index = products.findIndex((p: IProduct) => p.id == id);
+    if (index < 0) {
+      res.writeHead(404, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "Product not Found" }));
+    } 
+    products.splice(index,1);
+    insertProduct(products);
+     res.writeHead(202, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "Product Deleted successfully" ,
+        data:null
+      }));
   } else {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({ message: "This is Product route but not found" }));
