@@ -3,7 +3,7 @@ import { insertProduct, readProduct } from "../service/product.service.js";
 import type { IProduct } from "../types/productsType.js";
 import { parseBody } from "../utility/parseBody.js";
 
-export  const productController = async (
+export const productController = async (
   req: IncomingMessage,
   res: ServerResponse,
 ) => {
@@ -33,23 +33,37 @@ export  const productController = async (
         data: product,
       }),
     );
-  }else if(method === "POST" && url==="/products"){
-    const body=await parseBody(req)
-    const newProduct={
-      id:Date.now(),
-      ...body
-    }
-      const products = readProduct();;
-      products.push(newProduct);
+  } else if (method === "POST" && url === "/products") {
+    const body = await parseBody(req);
+    const newProduct = {
+      id: Date.now(),
+      ...body,
+    };
+    const products = readProduct();
+    products.push(newProduct);
     insertProduct(products);
-      res.writeHead(200, { "content-type": "application/json" });
+    res.writeHead(200, { "content-type": "application/json" });
     res.end(
       JSON.stringify({
         message: "Product added successfully",
-       
-      })
-    )
-
+      }),
+    );
+  } else if (method === "PUT" && id !== null) {
+    const body = await parseBody(req);
+    const products = readProduct();
+    const index = products.findIndex((p: IProduct) => p.id == id);
+    if (index < 0) {
+      res.writeHead(404, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "Product not Found" }));
+    } 
+      products[index] = {
+        id: products[index].id,
+        ...body,
+      };
+      insertProduct(products);
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "Product updated successfully" }));
+    
   } else {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({ message: "This is Product route but not found" }));
