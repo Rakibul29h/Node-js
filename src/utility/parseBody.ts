@@ -9,7 +9,7 @@ export const parseBody=(req:IncomingMessage) : Promise<any>=>{
         })
         req.on("end",()=>{
             try{
-                resolve(body);
+                resolve(JSON.parse(body));
             }catch(error){
                 reject(error)
             }
