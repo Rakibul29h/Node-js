@@ -1,8 +1,9 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { readProduct } from "../service/product.service.js";
 import type { IProduct } from "../types/productsType.js";
+import { parseBody } from "../utility/parseBody.js";
 
-export const productController = (
+export  const productController = async (
   req: IncomingMessage,
   res: ServerResponse,
 ) => {
@@ -32,6 +33,9 @@ export const productController = (
         data: product,
       }),
     );
+  }else if(method === "POST" && url==="/products"){
+    const body=await parseBody(req)
+    console.log(body);
   } else {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({ message: "This is Product route but not found" }));
